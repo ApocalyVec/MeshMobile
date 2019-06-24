@@ -57,17 +57,6 @@ function main()
     render();
 }
 
-function cube()
-{
-    var verts = [];
-    verts = verts.concat(quad( 1, 0, 3, 2 ));
-    verts = verts.concat(quad( 2, 3, 7, 6 ));
-    verts = verts.concat(quad( 3, 0, 4, 7 ));
-    verts = verts.concat(quad( 6, 5, 1, 2 ));
-    verts = verts.concat(quad( 4, 5, 6, 7 ));
-    verts = verts.concat(quad( 5, 4, 0, 1 ));
-    return verts;
-}
 
 function render()
 {
@@ -75,6 +64,14 @@ function render()
     var blueCube = cube();
     var greenCube = cube();
     var magentaCube = cube();
+
+    var va = vec4(0.0, 0.0, -1.0,1);
+    var vb = vec4(0.0, 0.942809, 0.333333, 1);
+    var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
+    var vd = vec4(0.816497, -0.471405, 0.333333,1);
+    var numTimesToSubdivide = 1;
+    let tetra = tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+
 
     pMatrix = perspective(fovy, aspect, .1, 10);
     gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
@@ -137,27 +134,3 @@ function draw(cube, color)
 }
 
 
-function quad(a, b, c, d)
-{
-    var verts = [];
-
-    var vertices = [
-        vec4( -0.5, -0.5,  0.5, 1.0 ),
-        vec4( -0.5,  0.5,  0.5, 1.0 ),
-        vec4(  0.5,  0.5,  0.5, 1.0 ),
-        vec4(  0.5, -0.5,  0.5, 1.0 ),
-        vec4( -0.5, -0.5, -0.5, 1.0 ),
-        vec4( -0.5,  0.5, -0.5, 1.0 ),
-        vec4(  0.5,  0.5, -0.5, 1.0 ),
-        vec4(  0.5, -0.5, -0.5, 1.0 )
-    ];
-
-    var indices = [ a, b, c, a, c, d ];
-
-    for ( var i = 0; i < indices.length; ++i )
-    {
-        verts.push( vertices[indices[i]] );
-    }
-
-    return verts;
-}
