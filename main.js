@@ -11,9 +11,7 @@ var program;
 
 var mvMatrix, pMatrix;
 var modelView, projection;
-var eye;
-const at = vec3(0.0, 0.0, 0.0);
-const up = vec3(0.0, 1.0, 0.0);
+
 
 let stack = [];
 
@@ -41,7 +39,7 @@ function main()
 
     aspect =  canvas.width/canvas.height;
     // Set clear color
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     // Clear <canvas> by clearing the color buffer
     gl.enable(gl.DEPTH_TEST);
@@ -60,27 +58,25 @@ function main()
 
 function render()
 {
-    var redCube = cube();
-    var blueCube = cube();
-    var greenCube = cube();
-    var magentaCube = cube();
+    let redCube = cube();
+    let blueCube = cube();
+    let magentaCube = cube();
 
-    var va = vec4(0.0, 0.0, -1.0,1);
-    var vb = vec4(0.0, 0.942809, 0.333333, 1);
-    var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
-    var vd = vec4(0.816497, -0.471405, 0.333333,1);
-    var numTimesToSubdivide = 3;
-
-    let tetra_mesh = tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+    let tetra1 = tetrahedron(1);
+    let tetra2 = tetrahedron(3);
+    let tetra3 = tetrahedron(5);
 
 
     pMatrix = perspective(fovy, aspect, .1, 10);
     gl.uniformMatrix4fv( projection, false, flatten(pMatrix) );
 
-    eye = vec3(0, 0, 4);
+    let eye;
+    let at = vec3(0.0,0.0, 0.0);
+    let up = vec3(0.0, 1.0, 0.0);
+    eye = vec3(0.0, 0.0, 8.0);
     mvMatrix = lookAt(eye, at , up);
 
-
+    // let tetra3TransformM =translate()
 
     //Hierarchy modeling
     stack.push(mvMatrix); // matrix 0 saved
@@ -89,24 +85,20 @@ function render()
         draw(redCube, vec4(1.0, 0.0, 0.0, 1.0));
 
         stack.push(mvMatrix);  // matrix 1 saved
-            mvMatrix = mult(mvMatrix, translate(1,1,1));
+            mvMatrix = mult(translate(0,3.0,0.0), mvMatrix);
             gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
             draw(magentaCube, vec4(1.0, 0.0, 1.0, 1.0));
         mvMatrix = stack.pop();  // matrix 1 popped
     mvMatrix = stack.pop();  // matrix 0 popped
 
     stack.push(mvMatrix);  // matrix 0 saved
-        mvMatrix = mult(mvMatrix, translate(-1,-1,-1));
+        mvMatrix = mult(translate(-1,-1,0.0), mvMatrix);
         gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
         draw(blueCube, vec4(0.0, 0.0, 1.0, 1.0));
     mvMatrix = stack.pop();  // matrix 0 popped
 
-
     gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-    draw(greenCube, vec4(0.0, 1.0, 0.0, 1.0));
-
-    gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-    draw(tetra_mesh, vec4(1.0, 1.0, 0.0, 1.0));
+    draw(tetra1, vec4(1.0, 1.0, 0.0, 1.0));
 
 }
 
@@ -142,34 +134,4 @@ function draw(mesh, color) {
 
     gl.drawArrays( gl.TRIANGLES, 0, mesh.points.length );
 }
-
-// function draw(cube, color)
-// {
-//     var fragColors = [];
-//
-//     for(var i = 0; i < cube.length; i++)
-//     {
-//         fragColors.push(color);
-//     }
-//
-//     var pBuffer = gl.createBuffer();
-//     gl.bindBuffer(gl.ARRAY_BUFFER, pBuffer);
-//     gl.bufferData(gl.ARRAY_BUFFER, flatten(cube), gl.STATIC_DRAW);
-//
-//     var vPosition = gl.getAttribLocation(program,  "vPosition");
-//     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
-//     gl.enableVertexAttribArray(vPosition);
-//
-//     var cBuffer = gl.createBuffer();
-//     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-//     gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
-//
-//     var vColor= gl.getAttribLocation(program,  "vColor");
-//     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-//     gl.enableVertexAttribArray(vColor);
-//
-//     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
-//
-// }
-
 

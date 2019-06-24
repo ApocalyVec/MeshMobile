@@ -33,7 +33,12 @@ function divideTriangle(a, b, c, count, mesh) {
 }
 
 
-function tetrahedron(a, b, c, d, n) {
+function tetrahedron(n) {
+    let a = vec4(0.0, 0.0, -1.0,1);
+    let b = vec4(0.0, 0.942809, 0.333333, 1);
+    let c = vec4(-0.816497, -0.471405, 0.333333, 1);
+    let d = vec4(0.816497, -0.471405, 0.333333,1);
+
     let tetraMesh = {points: [], normals: []};
 
     divideTriangle(a, b, c, n, tetraMesh);
