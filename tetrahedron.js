@@ -1,25 +1,17 @@
-function triangle(a, b, c) {
+function triangle(a, b, c, mesh) {
 
-    let pointsArray = [];
-    let normalsArray = [];
-
-    pointsArray.push(a);
-    pointsArray.push(b);
-    pointsArray.push(c);
+    mesh.points.push(a);
+    mesh.points.push(b);
+    mesh.points.push(c);
 
     // normals are vectors
 
-    normalsArray.push(a[0],a[1], a[2], 0.0);
-    normalsArray.push(b[0],b[1], b[2], 0.0);
-    normalsArray.push(c[0],c[1], c[2], 0.0);
-
-    index += 3;
-
+    mesh.normals.push(a[0],a[1], a[2], 0.0);
+    mesh.normals.push(b[0],b[1], b[2], 0.0);
+    mesh.normals.push(c[0],c[1], c[2], 0.0);
 }
 
-function divideTriangle(a, b, c, count) {
-    let index = 0;
-
+function divideTriangle(a, b, c, count, mesh) {
     if ( count > 0 ) {
 
         var ab = mix( a, b, 0.5);
@@ -30,20 +22,24 @@ function divideTriangle(a, b, c, count) {
         ac = normalize(ac, true);
         bc = normalize(bc, true);
 
-        divideTriangle( a, ab, ac, count - 1 );
-        divideTriangle( ab, b, bc, count - 1 );
-        divideTriangle( bc, c, ac, count - 1 );
-        divideTriangle( ab, bc, ac, count - 1 );
+        divideTriangle( a, ab, ac, count - 1, mesh);
+        divideTriangle( ab, b, bc, count - 1, mesh);
+        divideTriangle( bc, c, ac, count - 1, mesh);
+        divideTriangle( ab, bc, ac, count - 1, mesh);
     }
     else {
-        triangle( a, b, c);
+        triangle( a, b, c, mesh);
     }
 }
 
 
 function tetrahedron(a, b, c, d, n) {
-    divideTriangle(a, b, c, n);
-    divideTriangle(d, c, b, n);
-    divideTriangle(a, d, b, n);
-    divideTriangle(a, c, d, n);
+    let tetraMesh = {points: [], normals: []};
+
+    divideTriangle(a, b, c, n, tetraMesh);
+    divideTriangle(d, c, b, n, tetraMesh);
+    divideTriangle(a, d, b, n, tetraMesh);
+    divideTriangle(a, c, d, n, tetraMesh);
+
+    return tetraMesh;
 }

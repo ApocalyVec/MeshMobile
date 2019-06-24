@@ -69,8 +69,9 @@ function render()
     var vb = vec4(0.0, 0.942809, 0.333333, 1);
     var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
     var vd = vec4(0.816497, -0.471405, 0.333333,1);
-    var numTimesToSubdivide = 1;
-    let tetra = tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+    var numTimesToSubdivide = 3;
+
+    let tetra_mesh = tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 
 
     pMatrix = perspective(fovy, aspect, .1, 10);
@@ -79,7 +80,9 @@ function render()
     eye = vec3(0, 0, 4);
     mvMatrix = lookAt(eye, at , up);
 
-    // Hierarchy modeling
+
+
+    //Hierarchy modeling
     stack.push(mvMatrix); // matrix 0 saved
         mvMatrix = mult(rotateZ(45), mvMatrix);
         gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
@@ -102,35 +105,71 @@ function render()
     gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
     draw(greenCube, vec4(0.0, 1.0, 0.0, 1.0));
 
+    gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
+    draw(tetra_mesh, vec4(1.0, 1.0, 0.0, 1.0));
+
 }
 
-function draw(cube, color)
-{
-    var fragColors = [];
+// mesh must be a
+function draw(mesh, color) {
+    /*
+    * param: mesh: dictionary object with keys:
+    *   points: array of points that make up the mesh
+    *   normals: array of normals of the mesh
+     */
+    let fragColors = [];
 
-    for(var i = 0; i < cube.length; i++)
+    for(let i = 0; i < mesh.points.length; i++)
     {
         fragColors.push(color);
     }
 
-    var pBuffer = gl.createBuffer();
+    let pBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, pBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(cube), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(mesh.points), gl.STATIC_DRAW);
 
-    var vPosition = gl.getAttribLocation(program,  "vPosition");
+    let vPosition = gl.getAttribLocation(program,  "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-    var cBuffer = gl.createBuffer();
+    let cBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
 
-    var vColor= gl.getAttribLocation(program,  "vColor");
+    let vColor= gl.getAttribLocation(program,  "vColor");
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
-
+    gl.drawArrays( gl.TRIANGLES, 0, mesh.points.length );
 }
+
+// function draw(cube, color)
+// {
+//     var fragColors = [];
+//
+//     for(var i = 0; i < cube.length; i++)
+//     {
+//         fragColors.push(color);
+//     }
+//
+//     var pBuffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, pBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, flatten(cube), gl.STATIC_DRAW);
+//
+//     var vPosition = gl.getAttribLocation(program,  "vPosition");
+//     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
+//     gl.enableVertexAttribArray(vPosition);
+//
+//     var cBuffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
+//
+//     var vColor= gl.getAttribLocation(program,  "vColor");
+//     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+//     gl.enableVertexAttribArray(vColor);
+//
+//     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
+//
+// }
 
 
