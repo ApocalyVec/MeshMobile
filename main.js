@@ -37,7 +37,7 @@ function main()
 	gl.useProgram(program);
 
 	//Set up the viewport
-    gl.viewport( 0, 0, 400, 400);
+    gl.viewport( 0, 0, canvas.width, canvas.height);
 
     aspect =  canvas.width/canvas.height;
     // Set clear color
@@ -96,13 +96,13 @@ function render()
 
         let hie11TransM= mult(translate(-2.0, -2.0, 0.0), rotateY(0));
 
-            let hie111TransM= mult(translate(-1.0, -2.0, 0.0), rotateY(0));
-            let hie112TransM= mult(translate(1.0, -2.0, 0.0), rotateY(0));
+            let hie111TransM= mult(translate(-1.0, -3.0, 0.0), rotateY(0));
+            let hie112TransM= mult(translate(1.0, -3.0, 0.0), rotateY(0));
 
         let hie12TransM= mult(translate(2.0, -2.0, 0.0), rotateY(0));
 
-            let hie121TransM= mult(translate(-1.0, -2.0, 0.0), rotateY(0));
-            let hie122TransM= mult(translate(1.0, -2.0, 0.0), rotateY(0));
+            let hie121TransM= mult(translate(-1.0, -3.0, 0.0), rotateY(0));
+            let hie122TransM= mult(translate(1.0, -3.0, 0.0), rotateY(0));
 
     //Hierarchy modeling
     transformStack.push(mvMatrix); // matrix 0 saved
