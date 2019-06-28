@@ -18,7 +18,7 @@ let initModelMatrix;
 let transformStack = [];
 
 // light related globals
-let lightPosition = vec4(10.0, 10.0, 10.0, 0.0 );  // position if the light source
+let lightPosition = vec4(15.0, 15.0, 20.0, 0.0 );  // position if the light source
 var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
 var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
 var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
@@ -30,6 +30,7 @@ var materialShininess = 20.0;
 
 let lightMode = 'flat';
 
+let spotSize = 0.01;
 function main()
 {
 	// Retrieve <canvas> element
@@ -65,17 +66,9 @@ function main()
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    let diffuseProduct = mult(lightDiffuse, materialDiffuse);
-    let specularProduct = mult(lightSpecular, materialSpecular);
-    let ambientProduct = mult(lightAmbient, materialAmbient);
 
-
-    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
-    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct));
-    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct));
 
     gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(lightPosition));
-    gl.uniform1f(gl.getUniformLocation(program, "materialShininess"), materialShininess);
 
     window.addEventListener("keypress", function(e) {
 
@@ -88,6 +81,12 @@ function main()
             lightMode = 'flat';
 
             console.log('using Flat lighting' + lightMode);
+        }
+        if (e.key === 'p') {
+            spotSize += 0.0001;
+        }
+        if (e.key === 'P') {
+            spotSize -= 0.0001;
         }
     });
 
@@ -108,7 +107,7 @@ let hie12RotAngle = 0;
 
 function render()
 {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.1, 0.3, 0.5, 1.0);
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // meshes to render
@@ -131,6 +130,42 @@ function render()
     let up = vec3(0.0, 1.0, 0.0);
     eye = vec3(0.0, 0.0, 15.0);
     mvMatrix = lookAt(eye, at , up);
+
+    let mat_jade = {materialAmbient: vec4(0.135, 0.2225, 0.1575, 1.0 ),
+                    materialDiffuse: vec4(0.5, 0.89, 0.63, 1.0 ),
+                    materialSpecular: vec4( 0.316228, 0.316228,	0.316228, 1.0),
+                    materialShininess: 0.1};
+
+    let mat_pearl = {materialAmbient: vec4(0.25, 0.20725, 0.20725, 1.0 ),
+                    materialDiffuse: vec4(1, 0.829, 0.829, 1.0 ),
+                    materialSpecular: vec4(0.296648, 0.296648, 0.296648, 1.0),
+                    materialShininess: 0.088};
+
+    let mat_ruby = {materialAmbient: vec4(0.1745, 0.01175, 0.01175, 1.0 ),
+                    materialDiffuse: vec4(0.61424, 0.04136, 0.04136, 1.0 ),
+                    materialSpecular: vec4(0.727811, 0.626959, 0.626959, 1.0),
+                    materialShininess: 0.6};
+    let mat_brass = {materialAmbient: vec4(0.329412, 0.223529, 0.027451, 1.0 ),
+                    materialDiffuse: vec4(0.780392, 0.568627, 0.113725, 1.0 ),
+                    materialSpecular: vec4(0.992157, 0.941176, 0.807843, 1.0),
+                    materialShininess: 0.21794872};
+
+    let mat_chrome = {materialAmbient: vec4(0.25, 0.25, 0.25, 1.0 ),
+                    materialDiffuse: vec4(0.4, 0.4, 0.4, 1.0 ),
+                    materialSpecular: vec4(0.774597, 0.774597, 0.774597, 1.0),
+                    materialShininess: 0.6};
+
+    let mat_obsidian = {materialAmbient: vec4(0.05375, 0.05, 0.06625, 1.0 ),
+                    materialDiffuse: vec4(0.18275, 0.17, 0.22525, 1.0 ),
+                    materialSpecular: vec4(0.332741, 0.328634, 0.346435, 1.0),
+                    materialShininess: 0.3};
+
+    let mat_turquoise = {materialAmbient: vec4(0.1, 0.18725, 0.1745, 1.0 ),
+        materialDiffuse: vec4(0.396, 0.74151, 0.69102, 1.0 ),
+        materialSpecular: vec4(0.297254, 0.30829, 0.306678, 1.0),
+        materialShininess: 0.1};
+
+
 
     // mesh transform matrices
     let tetra1InitTransformM =rotateY(tetraRotAngle);
@@ -206,7 +241,7 @@ function render()
         transformStack.push(mvMatrix); // matrix 1 saved
             mvMatrix = mult(mvMatrix, tetra1InitTransformM);
             gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-            draw(tetra1, vec4(1.0, 1.0, 1.0, 1.0));
+            draw(tetra1, mat_pearl);
 
     mvMatrix = transformStack.pop(); // matrix 1 retrieved
 
@@ -221,7 +256,7 @@ function render()
             transformStack.push(mvMatrix); //matrix 11 saved
                 mvMatrix = mult(mvMatrix, tetra2InitTransformM);
                 gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                draw(tetra2, vec4(.5, 1.0, 0.0, 1.0));
+                draw(tetra2, mat_jade);
 
     mvMatrix = transformStack.pop(); // matrix 11 retrieved
 
@@ -230,7 +265,7 @@ function render()
                     transformStack.push(mvMatrix); // matrix 111 saved
                         mvMatrix = mult(mvMatrix, cube11InitTransformM);
                         gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                        draw(redCube, vec4(1.0, 0.0, 0.0, 1.0));
+                        draw(redCube, mat_obsidian);
                 mvMatrix = transformStack.pop(); // matrix 111 retrieved
 
             mvMatrix = transformStack.pop(); // matrix 11 retrieved
@@ -242,7 +277,7 @@ function render()
 
                         mvMatrix = mult(mvMatrix, cube12InitTransformM);
                         gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                        draw(magentaCube, vec4(1.0, 0.0, 1.0, 1.0));
+                        draw(magentaCube, mat_chrome);
                 mvMatrix = transformStack.pop(); // matrix 113 retrieved
 
             mvMatrix = transformStack.pop(); // matrix 11 retrieved
@@ -258,7 +293,7 @@ function render()
             transformStack.push(mvMatrix); //matrix 12 saved
                 mvMatrix = mult(mvMatrix, tetra3InitTransformM);
                 gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                draw(tetra3, vec4(0.3, 0.4, 1.0, 1.0));
+                draw(tetra3, mat_ruby);
 
             mvMatrix = transformStack.pop(); // matrix 12 retrieved
 
@@ -269,7 +304,7 @@ function render()
 
                     mvMatrix = mult(mvMatrix, cube21InitTransformM);
                     gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                    draw(blueCube, vec4(0.0, 0.0, 1.0, 1.0));
+                    draw(blueCube, mat_turquoise);
                 mvMatrix = transformStack.pop(); // matrix 121 retrieved
 
             mvMatrix = transformStack.pop(); // matrix 12 retrieved
@@ -281,7 +316,7 @@ function render()
 
                     mvMatrix = mult(mvMatrix, cube22InitTransformM);
                     gl.uniformMatrix4fv( modelView, false, flatten(mvMatrix) );
-                    draw(cube4, vec4(0.0, 1.0, 1.0, 1.0));
+                    draw(cube4, mat_brass);
                 mvMatrix = transformStack.pop(); // matrix 122 retrieved
 
             mvMatrix = transformStack.pop(); // matrix 12 retrieved
@@ -349,7 +384,7 @@ function drawTriangle(p1, p2, p3) {
 }
 
 // mesh must be a
-function draw(mesh, color) {
+function draw(mesh, material) {
     /*
     * param: mesh: dictionary object with keys:
     *   points: array of points that make up the mesh
@@ -396,17 +431,18 @@ function draw(mesh, color) {
     gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal);
 
-    //buffer colors
-    // let cBuffer = gl.createBuffer();
-    // gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
-    // let vColor= gl.getAttribLocation(program,  "vColor");
-    // gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    // gl.enableVertexAttribArray(vColor);
+    let diffuseProduct = mult(lightDiffuse, material.materialDiffuse);
+    let specularProduct = mult(lightSpecular, material.materialSpecular);
+    let ambientProduct = mult(lightAmbient, material.materialAmbient);
 
+    gl.uniform1f(gl.getUniformLocation(program, "materialShininess"), materialShininess);
+    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct));
 
 
     gl.uniform1i(gl.getUniformLocation(program, "isMesh"), 1);
+    gl.uniform1f(gl.getUniformLocation(program, "spotSize"), spotSize);
 
     gl.drawArrays( gl.TRIANGLES, 0, mesh.points.length );
 }

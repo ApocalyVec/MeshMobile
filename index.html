@@ -20,6 +20,7 @@
     uniform vec4 lightPosition;
 
     uniform int isMesh;
+    uniform float spotSize;
 
 	void main() {
 
@@ -34,9 +35,18 @@
             vec3 V = normalize(-pos);
             vec3 N = normalize((modelMatrix * vNormal).xyz);
             vec3 R = ((2.0) * dot(L, N) * N) - L;
+
             vec4 ambient = ambientProduct;  // ambient light
-            vec4 diffuse = diffuseProduct * dot(L, N);  // diffuse light
-            vec4 specular = pow((max(dot(V, R), 0.0)), materialShininess) * specularProduct; // specular light
+            vec4 diffuse =  vec4(0, 0, 0, 0);  // diffuse light
+            vec4 specular = vec4(0, 0, 0, 0); // specular light
+
+            vec3 lightDir = normalize(vec3(-1, -1, -2.2));
+
+            float spotLight = 1.0-spotSize;
+            if(dot(L, -lightDir) > spotLight) {
+                diffuse = dot(L, N) * diffuseProduct;
+                specular = pow(max(dot(V, R), 0.0), materialShininess) * specularProduct;
+            }
 
             fColor = ambient + diffuse + specular;
             fColor.a = 1.0;
