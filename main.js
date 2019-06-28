@@ -14,8 +14,18 @@ var modelView, projection;
 
 let initModelMatrix;
 
-
 let transformStack = [];
+
+// light related globals
+let lightPosition = vec4(1.0, 1.0, 0.3, 0.0 );  // position if the light source
+var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
+var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
+var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
+
+var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
+var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
+var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
+var materialShininess = 20.0;
 
 function main()
 {
@@ -53,6 +63,18 @@ function main()
     modelView = gl.getUniformLocation(program, "modelMatrix");
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    let diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    let specularProduct = mult(lightSpecular, materialSpecular);
+    let ambientProduct = mult(lightAmbient, materialAmbient);
+
+
+    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct));
+
+    gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(lightPosition));
+    gl.uniform1f(gl.getUniformLocation(program, "materialShininess"), materialShininess);
 
     render();
 }
@@ -191,28 +213,36 @@ function draw(mesh, color) {
     *   points: array of points that make up the mesh
     *   normals: array of normals of the mesh
      */
-    let fragColors = [];
+    // let fragColors = [];
+    //
+    // for(let i = 0; i < mesh.points.length; i++)
+    // {
+    //     fragColors.push(color);
+    // }
 
-    for(let i = 0; i < mesh.points.length; i++)
-    {
-        fragColors.push(color);
-    }
-
+    // buffer vertices
     let pBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, pBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(mesh.points), gl.STATIC_DRAW);
-
     let vPosition = gl.getAttribLocation(program,  "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-    let cBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
+    // buffer normals
+    let nBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(mesh.normals), gl.STATIC_DRAW );
+    let vNormal = gl.getAttribLocation( program, "vNormal" );
+    gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( vNormal);
 
-    let vColor= gl.getAttribLocation(program,  "vColor");
-    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vColor);
+    // buffer colors
+    // let cBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
+    // let vColor= gl.getAttribLocation(program,  "vColor");
+    // gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    // gl.enableVertexAttribArray(vColor);
 
     gl.drawArrays( gl.TRIANGLES, 0, mesh.points.length );
 }
