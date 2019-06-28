@@ -1,4 +1,4 @@
-// TODO flat lighting, spot light, FIX cube Lighting
+// TODO flat lighting, spot light, different material
 // TODO user inputs
 // TODO Extra Credit
 
@@ -27,6 +27,8 @@ var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
 var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
 var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 var materialShininess = 20.0;
+
+let lightMode = 'flat';
 
 function main()
 {
@@ -74,6 +76,20 @@ function main()
 
     gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(lightPosition));
     gl.uniform1f(gl.getUniformLocation(program, "materialShininess"), materialShininess);
+
+    window.addEventListener("keypress", function(e) {
+
+        if (e.key === 'm') {
+            lightMode = 'gourand';
+
+            console.log('using Gouraud lighting ' + lightMode);
+        }
+        if (e.key === 'M') {
+            lightMode = 'flat';
+
+            console.log('using Flat lighting' + lightMode);
+        }
+    });
 
     render();
 }
@@ -346,6 +362,24 @@ function draw(mesh, color) {
     //     fragColors.push(color);
     // }
 
+    if (lightMode == 'flat') {
+        mesh.normals = [];
+
+        for(let i = 0; i < mesh.face_normals.length; i ++) {
+            mesh.normals.push(mesh.face_normals[i]);
+            mesh.normals.push(mesh.face_normals[i]);
+            mesh.normals.push(mesh.face_normals[i]);
+        }
+
+        mesh.normals = mesh.normals.flat();
+
+    }
+    else if (lightMode == 'gourand') {
+    }
+    else{
+        console.log('Invalid Lighting Mode');
+    }
+
     // buffer vertices
     let pBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, pBuffer);
@@ -362,14 +396,41 @@ function draw(mesh, color) {
     gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal);
 
-    // buffer colors
+    //buffer colors
     // let cBuffer = gl.createBuffer();
     // gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
     // gl.bufferData(gl.ARRAY_BUFFER, flatten(fragColors), gl.STATIC_DRAW);
     // let vColor= gl.getAttribLocation(program,  "vColor");
     // gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     // gl.enableVertexAttribArray(vColor);
+
+
+
     gl.uniform1i(gl.getUniformLocation(program, "isMesh"), 1);
+
     gl.drawArrays( gl.TRIANGLES, 0, mesh.points.length );
 }
 
+function newell(v1, v2, v3) {
+    /*
+    * finds the surface normal for v1, v2, and v3
+    * return the surface normal as a unit vector
+    * */
+
+    let n1, n2, n3; //
+
+    n1 = (v1[1] - v2[1]) * (v1[2] + v2[2]) +
+        (v2[1] - v3[1]) * (v2[2] + v3[2]) +
+        (v3[1] - v1[1]) * (v3[2] + v1[2]);
+
+    n2 = (v1[2] - v2[2]) * (v1[0] + v2[0]) +
+        (v2[2] - v3[2]) * (v2[0] + v3[0]) +
+        (v3[2] - v1[2]) * (v3[0] + v1[0]);
+
+    n3 = (v1[0] - v2[0]) * (v1[1] + v2[1]) +
+        (v2[0] - v3[0]) * (v2[1] + v3[1]) +
+        (v3[0] - v1[0]) * (v3[1] + v1[1]);
+
+    let normal = normalize(vec3(n1,n2,n3), false);
+    return vec4(normal[0], normal[1], normal[2], 0.0);
+}

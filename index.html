@@ -7,10 +7,12 @@
 	<script id="vshader" type="x-shader/x-vertex">
 	attribute vec4 vPosition;
 	attribute vec4 vNormal;
+    //attribute vec4 vFaceNormal;
+
 	uniform mat4 projectionMatrix;
 	uniform mat4 modelMatrix;
 
-	// attribute vec4 vColor;
+	attribute vec4 vColor;
 	varying vec4 fColor;
 
     uniform vec4 ambientProduct, diffuseProduct, specularProduct;

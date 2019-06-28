@@ -9,6 +9,8 @@ function triangle(a, b, c, mesh) {
     mesh.normals.push(b[0],b[1], b[2], 0.0);
     mesh.normals.push(a[0],a[1], a[2], 0.0);
 
+    mesh.face_normals.push(newell(c,b,a));
+
 }
 
 function divideTriangle(a, b, c, count, mesh) {
@@ -39,7 +41,7 @@ function tetrahedron(n) {
     let c = vec4(-0.816497, -0.471405, 0.333333, 1);
     let d = vec4(0.816497, -0.471405, 0.333333,1);
 
-    let tetraMesh = {points: [], normals: []};
+    let tetraMesh = {points: [], normals: [], face_normals: []};
 
     divideTriangle(a, b, c, n, tetraMesh);
     divideTriangle(d, c, b, n, tetraMesh);
