@@ -1,14 +1,14 @@
 function triangle(a, b, c, mesh) {
-
-    mesh.points.push(a);
-    mesh.points.push(b);
     mesh.points.push(c);
+    mesh.points.push(b);
+    mesh.points.push(a);
 
     // normals are vectors
 
-    mesh.normals.push(a[0],a[1], a[2], 0.0);
-    mesh.normals.push(b[0],b[1], b[2], 0.0);
     mesh.normals.push(c[0],c[1], c[2], 0.0);
+    mesh.normals.push(b[0],b[1], b[2], 0.0);
+    mesh.normals.push(a[0],a[1], a[2], 0.0);
+
 }
 
 function divideTriangle(a, b, c, count, mesh) {

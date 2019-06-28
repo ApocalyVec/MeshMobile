@@ -13,22 +13,22 @@ function quad(a, b, c, d, mesh)
 
     let indices = [ a, b, c, a, c, d ];
 
-    let counter = 0;
 
-    for ( let i = 0; i < indices.length; ++i )
+    for ( let i = 0; i < indices.length; i++ )
     {
         mesh.points.push( vertices[indices[i]] );
-        counter = counter + 1;
-        if(counter === 3) {
-            counter = 0;
-            let a = mesh.points[i];
-            let b = mesh.points[i-1];
-            let c = mesh.points[i-2];
+    }
 
-            mesh.normals.push(a[0],a[1], a[2], 0.0);
-            mesh.normals.push(b[0],b[1], b[2], 0.0);
-            mesh.normals.push(c[0],c[1], c[2], 0.0);
-        }
+    for (let i = 0; i < mesh.points.length - 2; i = i + 3) {
+        console.log(i);
+        let a = mesh.points[i];
+        let b = mesh.points[i+1];
+        let c = mesh.points[i+2];
+        mesh.normals.push(a[0],a[1], a[2], 0.0);
+        mesh.normals.push(b[0],b[1], b[2], 0.0);
+
+        mesh.normals.push(c[0],c[1], c[2], 0.0);
+
     }
 }
 

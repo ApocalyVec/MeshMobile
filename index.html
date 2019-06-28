@@ -17,22 +17,31 @@
     uniform float materialShininess;
     uniform vec4 lightPosition;
 
-	void main() {
-	    vec3 pos = (modelMatrix * vPosition).xyz;
+    uniform int isMesh;
 
-        vec3 L = normalize(lightPosition.xyz - pos);
-        vec3 V = normalize(-pos);
-        vec3 N = normalize((modelMatrix * vNormal).xyz);
-        vec3 R = ((2.0) * dot(L, N) * N) - L;
-        vec4 ambient = ambientProduct;  // ambient light
-        vec4 diffuse = diffuseProduct * dot(L, N);  // diffuse light
-        vec4 specular = pow((max(dot(V, R), 0.0)), materialShininess) * specularProduct; // specular light
+	void main() {
+
 
 		gl_Position = projectionMatrix * modelMatrix * vPosition;	// Point position
   		gl_PointSize = 10.0;		// Point size
 
-        fColor = ambient + diffuse + specular;
-        fColor.a = 1.0;
+        if (isMesh == 1) {
+            vec3 pos = (modelMatrix * vPosition).xyz;
+
+            vec3 L = normalize(lightPosition.xyz - pos);
+            vec3 V = normalize(-pos);
+            vec3 N = normalize((modelMatrix * vNormal).xyz);
+            vec3 R = ((2.0) * dot(L, N) * N) - L;
+            vec4 ambient = ambientProduct;  // ambient light
+            vec4 diffuse = diffuseProduct * dot(L, N);  // diffuse light
+            vec4 specular = pow((max(dot(V, R), 0.0)), materialShininess) * specularProduct; // specular light
+
+            fColor = ambient + diffuse + specular;
+            fColor.a = 1.0;
+        }
+        else {
+            fColor = vec4( 1.0, 1.0, 1.0, 1.0 );
+        }
   	}
 	</script>
 	
