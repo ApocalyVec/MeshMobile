@@ -23,14 +23,11 @@ var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
 var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
 var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 
-var materialAmbient = vec4( 1.0, 0.0, 1.0, 1.0 );
-var materialDiffuse = vec4( 1.0, 0.8, 0.0, 1.0 );
-var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 var materialShininess = 20.0;
 
 let lightMode = 'flat';
 
-let spotSize = 0.01;
+let spotSize = 0.005;
 function main()
 {
 	// Retrieve <canvas> element
@@ -190,7 +187,7 @@ function render()
     let hie121Y = -2.4;
     let hie122Y = -3.5;
 
-    let hie1VerArm0 = [vec4(hie1X, 0.0, 0.0, 1.0), vec4(hie1X, hie1Y-5.2, 0.0, 1.0)];
+    let hie1VerArm0 = [vec4(hie1X, 5.0, 0.0, 1.0), vec4(hie1X, hie1Y-5.2, 0.0, 1.0)];
     let hie1HorArm = [vec4(hie11X, hie1Y-5.2, 0.0, 1.0), vec4(hie12X, hie1Y-5.2, 0.0, 1.0)];
     let hie1VerArm1 = [vec4(hie11X, -3.0, 0.0, 1.0), vec4(hie11X, hie1Y-5.2, 0.0, 1.0)];
     let hie1VerArm2 = [vec4(hie12X, -3.0, 0.0, 1.0), vec4(hie12X, hie1Y-5.2, 0.0, 1.0)];
